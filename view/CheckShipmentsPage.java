@@ -89,10 +89,10 @@ public class CheckShipmentsPage {
 
     public ResultSet getUpcomingShipmentsOfBookName(String bookName) {
         String query = "SELECT SHIPMENT.ShipmentID, SHIPMENT.ShipDate, SHIPMENT.Description, LIBRARY.LibraryID " +
-                       "FROM SHIPMENT " +
-                       "INNER JOIN LIBRARY ON SHIPMENT.LibraryID = LIBRARY.LibraryID " +
-                       "WHERE SHIPMENT.Description LIKE ? AND CONVERT(DATE, SHIPMENT.ShipDate, 101) >= CONVERT(DATE, GETDATE(), 101)";
-    
+        "FROM SHIPMENT " +
+        "INNER JOIN LIBRARY ON SHIPMENT.LibraryID = LIBRARY.LibraryID " +
+        "WHERE SHIPMENT.Description LIKE ? AND CONVERT(DATE, SHIPMENT.ShipDate, 120) >= CONVERT(DATE, GETDATE(), 120)";
+
         try {
             PreparedStatement stmt = getConnection().prepareStatement(query);
             stmt.setString(1, "%" + bookName + "%");
