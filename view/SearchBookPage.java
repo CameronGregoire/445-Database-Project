@@ -108,7 +108,7 @@ public class SearchBookPage {
 
     public Connection getConnection() {
         try {
-            String url = "jdbc:sqlserver://localhost:1433;databaseName=LibraryDB;integratedSecurity=true";
+            String url = "jdbc:sqlserver://localhost:1433;databaseName=LibraryDB;integratedSecurity=true;trustServerCertificate=true;";
             Connection conn = DriverManager.getConnection(url);
             return conn;
         } catch (SQLException ex) {
@@ -116,6 +116,8 @@ public class SearchBookPage {
             return null;
         }
     }
+    
+    
 
     public ResultSet getBooksByName(String bookName) {
         String query = "SELECT BOOK.BookID, BOOK.BookName as 'Book Name', BOOK.PageCount as 'Page Count', " +
