@@ -166,18 +166,21 @@ public class SearchBookPage {
     
     public ResultSet getBooksByRating(String rating) {
         String query = "SELECT BOOK.BookID, BOOK.BookName as 'Book Name', BOOK.PageCount as 'Page Count', " +
-                       "BOOK.AuthorName as 'Author Name', PUBLISHER.PublisherName as 'Publisher Name' " +
-                       "FROM BOOK INNER JOIN PUBLISHER ON PUBLISHER.PublisherID = BOOK.PublisherID " +
-                       "WHERE Rating = ?";
+                       "BOOK.AuthorName as 'Author Name', PUBLISHER.PublisherName as 'Publisher Name', REVIEW.Rating as 'Rating' " +
+                       "FROM BOOK " +
+                       "INNER JOIN PUBLISHER ON PUBLISHER.PublisherID = BOOK.PublisherID " +
+                       "INNER JOIN REVIEW ON REVIEW.BookID = BOOK.BookID " +
+                       "WHERE REVIEW.Rating = ?";
         try {
             PreparedStatement stmt = getConnection().prepareStatement(query);
-            stmt.setString(1, rating);
+            stmt.setInt(1, Integer.parseInt(rating));
             return stmt.executeQuery();
         } catch (SQLException ex) {
             ex.printStackTrace();
             return null;
         }
     }
+    
     
     public ResultSet getBooksByPublisher(String publisherName) {
         String query = "SELECT BOOK.BookID, BOOK.BookName as 'Book Name', BOOK.PageCount as 'Page Count', " +
