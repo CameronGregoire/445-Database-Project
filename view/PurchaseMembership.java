@@ -21,25 +21,34 @@ public class PurchaseMembership {
     private JTextField nameField;
     private JTextArea resultArea;
 
+    /**
+     * Initializes the PurchaseMembership class by creating the GUI frame and components.
+     */
     public PurchaseMembership() {
+        // Create the main frame
         myFrame = new JFrame("Purchase Library Membership");
         myFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         myFrame.setSize(600, 400);
 
+        // Create the panel and set the layout
         JPanel myPanel = new JPanel(new GridLayout(6, 2));
         myPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 
+        // Create and add a label and text field for customer name input
         myPanel.add(new JLabel("Customer Name: "));
         nameField = new JTextField();
         myPanel.add(nameField);
 
+        // Create and add a button for purchasing membership
         JButton purchaseButton = new JButton("Purchase Membership");
         myPanel.add(purchaseButton);
         purchaseButton.addActionListener(e -> {
+            // Get the customer name entered by the user
             String customerName = nameField.getText();
 
             ResultSet result = null;
             if (!customerName.isEmpty()) {
+                // Call the purchaseMembership method to purchase the membership
                 result = purchaseMembership(customerName);
             }
 
@@ -47,11 +56,12 @@ public class PurchaseMembership {
             displayResult(result);
         });
 
-        // Back button to get back to the main page.
+        // Create a back button to get back to the main page
         JButton backButton = new JButton("Back");
         backButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                // Close the current frame and make the main page frame visible
                 myFrame.dispose();
                 MainPage.myFrame.setVisible(true);
             }
@@ -65,10 +75,12 @@ public class PurchaseMembership {
             }
         });
 
+        // Create a text area for displaying the result
         resultArea = new JTextArea();
         resultArea.setEditable(false);
         JScrollPane scrollPane = new JScrollPane(resultArea);
 
+        // Add the components to the frame
         myFrame.add(myPanel, BorderLayout.NORTH);
         myFrame.add(scrollPane, BorderLayout.CENTER);
         myFrame.add(backButton, BorderLayout.SOUTH);
@@ -77,6 +89,11 @@ public class PurchaseMembership {
         myFrame.setVisible(true);
     }
 
+    /**
+     * Establishes a connection to the database.
+     *
+     * @return the database connection
+     */
     public Connection getConnection() {
         try {
             String url = "jdbc:sqlserver://localhost:1433;databaseName=LibraryDB;integratedSecurity=true;trustServerCertificate=true;";
@@ -88,6 +105,12 @@ public class PurchaseMembership {
         }
     }
 
+    /**
+     * Purchases a membership for a customer.
+     *
+     * @param customerName the name of the customer
+     * @return the ResultSet containing the updated customer information, or null if the customer name does not exist
+     */
     public ResultSet purchaseMembership(String customerName) {
         try {
             // Check if the customer name exists in the database
@@ -98,11 +121,11 @@ public class PurchaseMembership {
             if (!checkResult.next()) {
                 return null; // Customer name does not exist in the database
             }
-    
+
             // Purchase a new membership
             LocalDate startDate = LocalDate.now();
             LocalDate endDate = startDate.plusMonths(1);
-    
+
             String purchaseQuery = "DECLARE @NewMembershipID INT;" +
                     "BEGIN TRANSACTION;" +
                     "INSERT INTO MEMBERSHIP(StartDate, EndDate) VALUES (?, ?);" +
@@ -114,7 +137,7 @@ public class PurchaseMembership {
             purchaseStmt.setString(2, endDate.toString());
             purchaseStmt.setString(3, customerName);
             purchaseStmt.executeUpdate();
-    
+
             // Retrieve the updated customer information
             String retrieveQuery = "SELECT * FROM CUSTOMER WHERE CustomerName = ?";
             PreparedStatement retrieveStmt = getConnection().prepareStatement(retrieveQuery);
@@ -124,8 +147,13 @@ public class PurchaseMembership {
             ex.printStackTrace();
             return null;
         }
-    }    
+    }
 
+    /**
+     * Displays the result in the resultArea.
+     *
+     * @param result the ResultSet containing the result to display
+     */
     public void displayResult(ResultSet result) {
         StringBuilder resultText = new StringBuilder("Results:\n");
         try {
@@ -153,3 +181,4 @@ public class PurchaseMembership {
         resultArea.setText(resultText.toString());
     }
 }
+
