@@ -13,7 +13,7 @@ import java.sql.*;
 
 /**
  * This class is responsible for handling the following:
- * Check for upcoming events at specified libraries using a given LibraryID.
+ * Find how many people who have had or currently have a membership with the library in a given zip code, city name, or state name.
  */
 public class FindAllMembersByLocationPage {
     private static JFrame myFrame;

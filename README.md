@@ -41,6 +41,8 @@ You should now be ready to run our code on the datanbase locally on your machine
 2. You should now see our program popup with various buttons to select for different queries.
 
 ## How to run the program's queries/functions
+We managed to combine many of our scenario/analytical queries down into 11 functions for our program.
+
 Assuming you have the program now up and running:
 
 ### Function 1: Get a list of books by given book name, author name, book genre, rating, or publisher.
@@ -104,3 +106,41 @@ There are 5 possible LibraryIDs (1-5). The libraries are only assigned IDs and n
     - If any errors poped up then you probably entered an incorrect combo for state/city/zip.
 9. Try registering the same exact customer name and address, you wll notice that it does not allow duplicate names at the same address.
 
+### Function 8: Update quantity of a book in a given library by a given book name, and quantity of change.
+1. Go back to the main menu if not already.
+2. Select the button 'Update Book Quantity...'
+    - This is a page that will be useful for employees that need to make changes to stock in the database such as when a book is sold, a shipment comes in, or checkin/checkout of a book happens.
+    - For simplicity, our program can only make changes to quantity of books that already exist within a Library's available book selection. In otherwords, you can only change quantity of books in a library only if that library actually sells that book.
+3. Type in LibraryID of '1', Book name of 'How to Poop', and any quantity value you want.
+    - We allow quantity to go into the negatives for our program, not only is this for simplicity, but it also is used in actual retain environments sometimes to track pre-orders.
+4. When you press the update button it will read you back the new quantity of that book at the Library of ID == 1.
+5. You will notice it wont let you change book quantity for books that are not currently being sold at certain libraries.
+6. Play around with other data inserted from the SQL script if you wish to do so.
+
+### Function 9: Update quantity of a book in a given library by a given book name, and quantity of change.
+1. Go back to the main menu if not already.
+2. Select the button 'Find Next Billing Cycle...'
+    - This function allows the user to just enter the integer membershipID to check if the membership is expired, or when the next billing cylce will be.
+    - By default all our inputed memberships are already expired, but you can use the programs other functionality to create new ones and experiment.
+3. Some of the pre-inserted membership IDs are between 1-50, experiment.
+4. Play around with other data inserted from the SQL script as well as the customer creation and membership purchasing buttons then come back here and experiment with the new membership IDs if you wish to do so.
+
+### Function 10: Find how many people who have had or currently have a membership with the library in a given zip code, city name, or state name.
+1. Go back to the main menu if not already.
+2. Select the button 'Get all Library Memebers in a Location...'
+    - This functon would be useful for employees/company analysists that are needing to track all current and old customers of their library that currently/used to have a membership with them.
+3. If you type 'Washington' into the state field you will get a list of ALL the customers as Washington is the only state we used for our customers.
+4. You can try typing only one field at a time, leaving others blank. It will account for only what you type in.
+5. You can type just Puyallup to get a list of all current and old members that are located in Puyallup specifically.
+6. You can try 98101 as a ZIP and see who is located there.
+7. Play around with other data inserted from the SQL script if you wish to do so.
+
+### Function 11: 
+1. Go back to the main menu if not already.
+2. Select the button 'Get Customer Details...'
+    - This functionality is useful to get a list of all customers' info under a specified customer name.
+3. Type typing 'Jane Smith' into the name field and hit Get Details. You wll fnd our single custmer with that name, unless you registered more customers with that same name.
+4. If you enter an invalid name it will tell you no such customers exist in the database.
+5. Play around with other data inserted from the SQL script if you wish to do so.
+
+You have now successfully completed all the functions/queries of our Library Database Management program.
