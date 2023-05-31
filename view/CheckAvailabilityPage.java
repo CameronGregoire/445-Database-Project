@@ -41,15 +41,19 @@ public class CheckAvailabilityPage {
         checkButton.addActionListener(e -> {
             String bookName = nameField.getText();
             String libraryID = libraryField.getText();
-            
+
             ResultSet result = null;
             if (!bookName.isEmpty() && !libraryID.isEmpty()) {
                 result = getAvailabilityByBookNameAndLibraryID(bookName, libraryID);
+            } else if (libraryID.isEmpty()) {
+                displayResultNoLibraryIDEntered();
+                return;
             }
 
             // Call a function to display the result in resultArea
             displayResult(result);
         });
+
         // Back button to get back to the main page.
         JButton backButton = new JButton("Back");
         backButton.addActionListener(new ActionListener() {
@@ -93,11 +97,11 @@ public class CheckAvailabilityPage {
 
     public ResultSet getAvailabilityByBookNameAndLibraryID(String bookName, String libraryID) {
         String query = "SELECT BOOK.BookName, AVAILABILITY.LibraryID, AVAILABILITY.Quantity " +
-                       "FROM BOOK " +
-                       "INNER JOIN AVAILABILITY ON BOOK.BookID = AVAILABILITY.BookID " +
-                       "INNER JOIN LIBRARY ON AVAILABILITY.LibraryID = LIBRARY.LibraryID " +
-                       "WHERE BOOK.BookName = ? AND AVAILABILITY.LibraryID = ?";
-    
+                "FROM BOOK " +
+                "INNER JOIN AVAILABILITY ON BOOK.BookID = AVAILABILITY.BookID " +
+                "INNER JOIN LIBRARY ON AVAILABILITY.LibraryID = LIBRARY.LibraryID " +
+                "WHERE BOOK.BookName = ? AND AVAILABILITY.LibraryID = ?";
+
         try {
             PreparedStatement stmt = getConnection().prepareStatement(query);
             stmt.setString(1, bookName);
@@ -108,14 +112,14 @@ public class CheckAvailabilityPage {
             return null;
         }
     }
-    
+
     public void displayResult(ResultSet result) {
         StringBuilder resultText = new StringBuilder("Results:\n");
         try {
             boolean bookAvailable = false;
             ResultSetMetaData metaData = result.getMetaData();
             int columnCount = metaData.getColumnCount();
-    
+
             while (result != null && result.next()) {
                 for (int i = 1; i <= columnCount; i++) {
                     String columnName = metaData.getColumnLabel(i);
@@ -134,5 +138,9 @@ public class CheckAvailabilityPage {
         }
         resultArea.setFont(new Font("Courier New", Font.PLAIN, 12));
         resultArea.setText(resultText.toString());
-    }    
+    }
+
+    public void displayResultNoLibraryIDEntered() {
+        resultArea.setText("No LibraryID was entered.");
+    }
 }

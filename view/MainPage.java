@@ -22,7 +22,7 @@ import java.awt.event.ActionListener;
  * 7) Register with the library (as a new Customer) given a customer name, state name, City name, zip code, email, and phone number.
  * 8) Update quantity of a book in a given library by a given book name, and quantity of change.
  * 9) Find the next billing cycle of a member given the MemberID (int value).
- * 10) Find how many people are currently subscribed for a membership with the library in a given zip code, city name, or state name.
+ * 10) Find how many people who have had or currently have a membership with the library in a given zip code, city name, or state name.
  * 11) Get a list of the customers' name, state name, City name, zip code, email, and phone number of all customers with a given name.
  */
 public class MainPage {
@@ -108,9 +108,41 @@ public class MainPage {
         });
 
         JButton button7 = new JButton("Register as a New Customer...");
+        button7.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                myFrame.setVisible(false);
+                new RegisterAsNewCustomerPage();
+            }
+        });
+
         JButton button8 = new JButton("Update Book Quantity...");
+        button8.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                myFrame.setVisible(false);
+                new UpdateBookQuantityPage();
+            }
+        });
+
         JButton button9 = new JButton("Find Next Billing Cycle...");
-        JButton button10 = new JButton("Find all Current Members in a Location...");
+        button9.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                myFrame.setVisible(false);
+                new FindNextBillingCyclePage();
+            }
+        });
+
+        JButton button10 = new JButton("Get all Library Members in a Location...");
+        button10.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                myFrame.setVisible(false);
+                new FindAllMembersByLocationPage();
+            }
+        });
+
         JButton button11 = new JButton("Get Customer Details...");
 
         myButtonPanel.add(button1);
