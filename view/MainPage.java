@@ -81,8 +81,32 @@ public class MainPage {
         });
 
         JButton button4 = new JButton("Purchase a Library Membership...");
+        button4.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                myFrame.setVisible(false);
+                new PurchaseMembership();
+            }
+        });
+
         JButton button5 = new JButton("Check for Events...");
+        button5.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                myFrame.setVisible(false);
+                new CheckForEventsPage();
+            }
+        });
+
         JButton button6 = new JButton("Check all Incoming Shipments...");
+        button6.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                myFrame.setVisible(false);
+                new CheckAllShipmentsPage();
+            }
+        });
+
         JButton button7 = new JButton("Register as a New Customer...");
         JButton button8 = new JButton("Update Book Quantity...");
         JButton button9 = new JButton("Find Next Billing Cycle...");
