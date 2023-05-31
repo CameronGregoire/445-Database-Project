@@ -108,13 +108,13 @@ public class CheckShipmentsPage {
         StringBuilder resultText = new StringBuilder("Results:\n");
         try {
             while (result != null && result.next()) {
-                String shipmentDate = result.getString("ShipmentDate");
+                String shipDate = result.getString("ShipDate");
                 String libraryID = result.getString("LibraryID");
                 String cityID = result.getString("CityID");
                 String stateID = result.getString("StateID");
                 String zipCode = result.getString("ZipCode");
 
-                String line = "Shipment Date: " + shipmentDate + "\n";
+                String line = "Shipment Date: " + shipDate + "\n";
                 line += "Library ID: " + libraryID + "\n";
                 line += "City ID: " + cityID + "\n";
                 line += "State ID: " + stateID + "\n";
