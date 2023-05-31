@@ -135,7 +135,7 @@ There are 5 possible LibraryIDs (1-5). The libraries are only assigned IDs and n
 6. You can try 98101 as a ZIP and see who is located there.
 7. Play around with other data inserted from the SQL script if you wish to do so.
 
-### Function 11: 
+### Function 11: Get a list of the customers' name, state name, City name, zip code, email, and phone number of all customers with a given name.
 1. Go back to the main menu if not already.
 2. Select the button 'Get Customer Details...'
     - This functionality is useful to get a list of all customers' info under a specified customer name.
