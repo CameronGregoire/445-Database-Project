@@ -76,6 +76,11 @@ public class CheckAllShipmentsPage {
         myFrame.setVisible(true);
     }
 
+    /**
+     * This method connects to the database using JDBC dependency.
+     * 
+     * @return  The connection to return
+     */
     public Connection getConnection() {
         try {
             String url = "jdbc:sqlserver://localhost:1433;databaseName=LibraryDB;integratedSecurity=true;trustServerCertificate=true;";
@@ -87,6 +92,12 @@ public class CheckAllShipmentsPage {
         }
     }
 
+    /**
+     * 
+     * 
+     * @param libraryID
+     * @return
+     */
     public ResultSet checkForAllIncomingShipments(String libraryID) {
         String query = "SELECT * FROM SHIPMENT WHERE LibraryID = ?";
         try {
