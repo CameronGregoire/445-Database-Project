@@ -88,12 +88,14 @@ public class CheckShipmentsPage {
     }
 
     public ResultSet getUpcomingShipmentsOfBookName(String bookName) {
-        String query = "SELECT SHIPMENT.ShipmentDate, LIBRARY.LibraryID, LIBRARY.CityID, LIBRARY.StateID, LIBRARY.ZipCode " +
-                       "FROM SHIPMENT " +
-                       "INNER JOIN LIBRARY ON SHIPMENT.LibraryID = LIBRARY.LibraryID " +
-                       "INNER JOIN BOOK ON SHIPMENT.BookID = BOOK.BookID " +
-                       "WHERE BOOK.BookName = ? AND SHIPMENT.ShipmentDate >= CURRENT_DATE()";
-
+        String query = "SELECT BOOK.BookName as 'Book Name', LIBRARY.LibraryID as 'Library ID', " +
+        "AVAILABILITY.Quantity as 'Available Quantity' " +
+        "FROM BOOK " +
+        "INNER JOIN AVAILABILITY ON BOOK.BookID = AVAILABILITY.BookID " +
+        "INNER JOIN LIBRARY ON AVAILABILITY.LibraryID = LIBRARY.LibraryID " +
+        "INNER JOIN PUBLISHER ON BOOK.PublisherID = PUBLISHER.PublisherID " +
+        "WHERE BOOK.BookName = ? AND AVAILABILITY.LibraryID = ? " +
+        "AND CONVERT(DATE, AVAILABILITY.ShipDate, 101) >= CONVERT(DATE, GETDATE(), 101)";
         try {
             PreparedStatement stmt = getConnection().prepareStatement(query);
             stmt.setString(1, bookName);
