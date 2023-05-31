@@ -109,7 +109,6 @@ public class CheckAvailabilityPage {
         }
     }
     
-
     public void displayResult(ResultSet result) {
         StringBuilder resultText = new StringBuilder("Results:\n");
         try {
@@ -126,5 +125,4 @@ public class CheckAvailabilityPage {
         }
         resultArea.setText(resultText.toString());
     }
-    
 }
