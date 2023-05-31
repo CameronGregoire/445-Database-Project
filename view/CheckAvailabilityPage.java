@@ -112,10 +112,6 @@ public class CheckAvailabilityPage {
     public void displayResult(ResultSet result) {
         StringBuilder resultText = new StringBuilder("Results:\n");
         try {
-            if (!result.next()) {
-                resultText.append("Book not available at the specified library.");
-            } 
-            else {
             ResultSetMetaData metaData = result.getMetaData();
             int columnCount = metaData.getColumnCount();
     
@@ -127,7 +123,6 @@ public class CheckAvailabilityPage {
                 }
                 resultText.append("\n");
             }
-        }
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
