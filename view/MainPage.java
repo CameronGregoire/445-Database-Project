@@ -87,6 +87,14 @@ public class MainPage {
         JButton button8 = new JButton("Update Book Quantity...");
         JButton button9 = new JButton("Find Next Billing Cycle...");
         JButton button10 = new JButton("Find all Current Members in a Location...");
+        button10.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                myFrame.setVisible(false);
+                new CurrentMembersPage();
+            }
+        });
+
         JButton button11 = new JButton("Get Customer Details...");
         button11.addActionListener(new ActionListener() {
             @Override
