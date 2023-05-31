@@ -56,23 +56,36 @@ public class SearchBookPage {
             String genre = genreField.getText();
             String rating = ratingField.getText();
             String publisher = publisherField.getText();
-            
-            ResultSet result = null;
-            if (!bookName.isEmpty()) {
-                result = getBooksByName(bookName);
-            } else if (!authorName.isEmpty()) {
-                result = getBooksByAuthor(authorName);
-            } else if (!genre.isEmpty()) {
-                result = getBooksByGenre(genre);
-            } else if (!rating.isEmpty()) {
-                result = getBooksByRating(rating);
-            } else if (!publisher.isEmpty()) {
-                result = getBooksByPublisher(publisher);
-            }
-
+        
+            ResultSet result = getBooksByMultipleCriteria(bookName, authorName, genre, rating, publisher);
+        
             // Call a function to display the result in resultArea
             displayResult(result);
         });
+        
+        // searchButton.addActionListener(e -> {
+        //     String bookName = nameField.getText();
+        //     String authorName = authorField.getText();
+        //     String genre = genreField.getText();
+        //     String rating = ratingField.getText();
+        //     String publisher = publisherField.getText();
+            
+        //     ResultSet result = null;
+        //     if (!bookName.isEmpty()) {
+        //         result = getBooksByName(bookName);
+        //     } else if (!authorName.isEmpty()) {
+        //         result = getBooksByAuthor(authorName);
+        //     } else if (!genre.isEmpty()) {
+        //         result = getBooksByGenre(genre);
+        //     } else if (!rating.isEmpty()) {
+        //         result = getBooksByRating(rating);
+        //     } else if (!publisher.isEmpty()) {
+        //         result = getBooksByPublisher(publisher);
+        //     }
+
+        //     // Call a function to display the result in resultArea
+        //     displayResult(result);
+        // });
 
         
 
@@ -117,6 +130,48 @@ public class SearchBookPage {
         }
     }
     
+    public ResultSet getBooksByMultipleCriteria(String bookName, String authorName, String genre, String rating, String publisher) {
+        StringBuilder query = new StringBuilder("SELECT BOOK.BookID, BOOK.BookName as 'Book Name', BOOK.PageCount as 'Page Count', " +
+                       "BOOK.AuthorName as 'Author Name', PUBLISHER.PublisherName as 'Publisher Name' " +
+                       "FROM BOOK INNER JOIN PUBLISHER ON PUBLISHER.PublisherID = BOOK.PublisherID " +
+                       "WHERE ");
+        boolean first = true;
+    
+        if (!bookName.isEmpty()) {
+            query.append("BookName = ?");
+            first = false;
+        }
+    
+        if (!authorName.isEmpty()) {
+            if (!first) {
+                query.append(" AND ");
+            }
+            query.append("AuthorName = ?");
+            first = false;
+        }
+    
+        // add similar blocks for genre, rating and publisher here
+    
+        try {
+            PreparedStatement stmt = getConnection().prepareStatement(query.toString());
+    
+            int paramIndex = 1;
+            if (!bookName.isEmpty()) {
+                stmt.setString(paramIndex++, bookName);
+            }
+    
+            if (!authorName.isEmpty()) {
+                stmt.setString(paramIndex++, authorName);
+            }
+    
+            // add similar blocks for setting parameters for genre, rating and publisher here
+    
+            return stmt.executeQuery();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            return null;
+        }
+    }
     
 
     public ResultSet getBooksByName(String bookName) {
