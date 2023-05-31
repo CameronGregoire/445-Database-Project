@@ -2,19 +2,13 @@ package view;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-
 import java.sql.*;
 
-/**
- * This class is responsible for handling the following:
- * Get a list of books by given book name, author name, book genre, rating (float value), or publisher.
- */
 public class SearchBookPage {
     private static JFrame myFrame;
     private JTextField nameField, authorField, genreField, ratingField, publisherField;
@@ -28,7 +22,7 @@ public class SearchBookPage {
         JPanel myPanel = new JPanel(new GridLayout(6, 2));
         myPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 
-        myPanel.add(new JLabel("Book Name: "));
+        myPanel.add(new JLabel("Book Name Contains: "));
         nameField = new JTextField();
         myPanel.add(nameField);
 
@@ -40,7 +34,7 @@ public class SearchBookPage {
         genreField = new JTextField();
         myPanel.add(genreField);
 
-        myPanel.add(new JLabel("Rating: "));
+        myPanel.add(new JLabel("Rating (0-5 stars): "));
         ratingField = new JTextField();
         myPanel.add(ratingField);
 
@@ -56,25 +50,14 @@ public class SearchBookPage {
             String genre = genreField.getText();
             String rating = ratingField.getText();
             String publisher = publisherField.getText();
-            
+
             ResultSet result = null;
-            if (!bookName.isEmpty()) {
-                result = getBooksByName(bookName);
-            } else if (!authorName.isEmpty()) {
-                result = getBooksByAuthor(authorName);
-            } else if (!genre.isEmpty()) {
-                result = getBooksByGenre(genre);
-            } else if (!rating.isEmpty()) {
-                result = getBooksByRating(rating);
-            } else if (!publisher.isEmpty()) {
-                result = getBooksByPublisher(publisher);
+            if (!bookName.isEmpty() || !authorName.isEmpty() || !genre.isEmpty() || !rating.isEmpty() || !publisher.isEmpty()) {
+                result = getBook(bookName, authorName, genre, rating, publisher);
             }
 
-            // Call a function to display the result in resultArea
             displayResult(result);
         });
-
-        
 
         // Back button to get back to the main page.
         JButton backButton = new JButton("Back");
@@ -117,62 +100,43 @@ public class SearchBookPage {
         }
     }
 
-    public ResultSet getBooksByName(String bookName) {
-        String query = "SELECT BOOK.BookID, BOOK.BookName as 'Book Name', BOOK.PageCount as 'Page Count', " +
-                       "BOOK.AuthorName as 'Author Name', PUBLISHER.PublisherName as 'Publisher Name' " +
-                       "FROM BOOK INNER JOIN PUBLISHER ON PUBLISHER.PublisherID = BOOK.PublisherID " +
-                       "WHERE BookName = ?";
+    public ResultSet getBook(String bookName, String authorName, String genre, String rating, String publisher) {
         try {
-            PreparedStatement stmt = getConnection().prepareStatement(query);
-            stmt.setString(1, bookName);
-            return stmt.executeQuery();
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-            return null;
-        }
-    }
-
-    public ResultSet getBooksByAuthor(String authorName) {
-        String query = "SELECT BOOK.BookID, BOOK.BookName as 'Book Name', BOOK.PageCount as 'Page Count', " +
-                       "BOOK.AuthorName as 'Author Name', PUBLISHER.PublisherName as 'Publisher Name' " +
-                       "FROM BOOK INNER JOIN PUBLISHER ON PUBLISHER.PublisherID = BOOK.PublisherID " +
-                       "WHERE AuthorName = ?";
-        try {
-            PreparedStatement stmt = getConnection().prepareStatement(query);
-            stmt.setString(1, authorName);
-            return stmt.executeQuery();
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-            return null;
-        }
-    }
+            Connection conn = getConnection();
+            Statement stmt = conn.createStatement();
     
-    public ResultSet getBooksByGenre(String genre) {
-        String query = "SELECT BOOK.BookID, BOOK.BookName as 'Book Name', BOOK.PageCount as 'Page Count', " +
-                       "BOOK.AuthorName as 'Author Name', PUBLISHER.PublisherName as 'Publisher Name' " +
-                       "FROM BOOK INNER JOIN PUBLISHER ON PUBLISHER.PublisherID = BOOK.PublisherID " +
-                       "WHERE Genre = ?";
-        try {
-            PreparedStatement stmt = getConnection().prepareStatement(query);
-            stmt.setString(1, genre);
-            return stmt.executeQuery();
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-            return null;
-        }
-    }
+            String query = "SELECT B.* FROM BOOK B";
     
-    public ResultSet getBooksByRating(String rating) {
-        String query = "SELECT BOOK.BookID, BOOK.BookName as 'Book Name', BOOK.PageCount as 'Page Count', " +
-                       "BOOK.AuthorName as 'Author Name', PUBLISHER.PublisherName as 'Publisher Name', REVIEW.Rating as 'Rating' " +
-                       "FROM BOOK " +
-                       "INNER JOIN PUBLISHER ON PUBLISHER.PublisherID = BOOK.PublisherID " +
-                       "INNER JOIN REVIEW ON REVIEW.BookID = BOOK.BookID " +
-                       "WHERE REVIEW.Rating = ?";
-        try {
-            PreparedStatement stmt = getConnection().prepareStatement(query);
-            stmt.setInt(1, Integer.parseInt(rating));
-            return stmt.executeQuery();
+            if (!bookName.isEmpty() || !authorName.isEmpty() || !genre.isEmpty() || !rating.isEmpty() || !publisher.isEmpty()) {
+                query += " INNER JOIN AVAILABILITY A ON B.BookID = A.BookID";
+                query += " INNER JOIN LIBRARY_SECTION LS ON A.SectionID = LS.SectionID";
+                query += " INNER JOIN PUBLISHER P ON B.PublisherID = P.PublisherID";
+            }
+    
+            query += " WHERE 1 = 1";
+    
+            if (!bookName.isEmpty()) {
+                query += " AND B.BookName LIKE '%" + bookName + "%'";
+            }
+    
+            if (!authorName.isEmpty()) {
+                query += " AND B.AuthorName LIKE '%" + authorName + "%'";
+            }
+    
+            if (!genre.isEmpty()) {
+                query += " AND LS.GenreName = '" + genre + "'";
+            }
+    
+            if (!rating.isEmpty()) {
+                query += " AND B.BookID IN (SELECT BookID FROM REVIEW WHERE Rating >= " + rating + ")";
+            }
+    
+            if (!publisher.isEmpty()) {
+                query += " AND P.PublisherName LIKE '%" + publisher + "%'";
+            }
+    
+            ResultSet result = stmt.executeQuery(query);
+            return result;
         } catch (SQLException ex) {
             ex.printStackTrace();
             return null;
@@ -180,33 +144,58 @@ public class SearchBookPage {
     }
     
     
-    public ResultSet getBooksByPublisher(String publisherName) {
-        String query = "SELECT BOOK.BookID, BOOK.BookName as 'Book Name', BOOK.PageCount as 'Page Count', " +
-                       "BOOK.AuthorName as 'Author Name', PUBLISHER.PublisherName as 'Publisher Name' " +
-                       "FROM BOOK INNER JOIN PUBLISHER ON PUBLISHER.PublisherID = BOOK.PublisherID " +
-                       "WHERE PublisherName = ?";
-        try {
-            PreparedStatement stmt = getConnection().prepareStatement(query);
-            stmt.setString(1, publisherName);
-            return stmt.executeQuery();
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-            return null;
-        }
-    }    
+    
 
     public void displayResult(ResultSet result) {
-        StringBuilder resultText = new StringBuilder("Results:\n");
         try {
-            while (result != null && result.next()) {
-                // You may need to adjust this based on the result structure of your SQL queries
-                String line = result.getString("Book Name") + " - " + result.getString("Author Name");
-                resultText.append(line).append("\n");
+            if (result == null) {
+                resultArea.setText("No books found.");
+                return;
             }
+    
+            StringBuilder output = new StringBuilder();
+            output.append("Books found:\n\n");
+    
+            while (result.next()) {
+                int bookID = result.getInt("BookID");
+                String bookName = result.getString("BookName");
+                int pageCount = result.getInt("PageCount");
+                String authorName = result.getString("AuthorName");
+                int publisherID = result.getInt("PublisherID");
+    
+                // Get genre for the book
+                Statement stmt = getConnection().createStatement();
+                ResultSet genreResult = stmt.executeQuery("SELECT GenreName FROM LIBRARY_SECTION WHERE SectionID IN (SELECT SectionID FROM AVAILABILITY WHERE BookID = " + bookID + ")");
+                String genre = "";
+                while (genreResult.next()) {
+                    genre += genreResult.getString("GenreName") + ", ";
+                }
+                if (!genre.isEmpty()) {
+                    genre = genre.substring(0, genre.length() - 2); // Remove the trailing comma and space
+                }
+    
+                // Get publisher name
+                ResultSet publisherResult = stmt.executeQuery("SELECT PublisherName FROM PUBLISHER WHERE PublisherID = " + publisherID);
+                String publisherName = "";
+                if (publisherResult.next()) {
+                    publisherName = publisherResult.getString("PublisherName");
+                }
+    
+                output.append("Book ID: ").append(bookID).append("\n");
+                output.append("Book Name: ").append(bookName).append("\n");
+                output.append("Page Count: ").append(pageCount).append("\n");
+                output.append("Author Name: ").append(authorName).append("\n");
+                output.append("Genre: ").append(genre).append("\n");
+                output.append("Publisher: ").append(publisherName).append("\n");
+                output.append("----------------------------------------\n");
+            }
+    
+            resultArea.setText(output.toString());
         } catch (SQLException ex) {
             ex.printStackTrace();
+            resultArea.setText("Error occurred while displaying books.");
         }
-        resultArea.setText(resultText.toString());
     }
+    
     
 }

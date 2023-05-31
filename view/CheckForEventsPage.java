@@ -13,46 +13,34 @@ import java.sql.*;
 
 /**
  * This class is responsible for handling the following:
- * Check the availability of a book given a specified LibraryID (int value).
+ * Check for upcoming events at specified libraries using a given LibraryID.
  */
-public class CheckAvailabilityPage {
+public class CheckForEventsPage {
     private static JFrame myFrame;
-    private JTextField nameField, libraryField;
+    private JTextField libraryField;
     private JTextArea resultArea;
 
-    public CheckAvailabilityPage() {
-        myFrame = new JFrame("Check Availability");
+    public CheckForEventsPage() {
+        myFrame = new JFrame("Check for Events");
         myFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         myFrame.setSize(600, 400);
 
         JPanel myPanel = new JPanel(new GridLayout(6, 2));
         myPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 
-        myPanel.add(new JLabel("Book Name: "));
-        nameField = new JTextField();
-        myPanel.add(nameField);
-
         myPanel.add(new JLabel("LibraryID (1-5): "));
         libraryField = new JTextField();
         myPanel.add(libraryField);
 
-        JButton checkButton = new JButton("Check Availability");
+        JButton checkButton = new JButton("Check for Events");
         myPanel.add(checkButton);
         checkButton.addActionListener(e -> {
-            String bookName = nameField.getText();
             String libraryID = libraryField.getText();
-
-            ResultSet result = null;
-            if (!bookName.isEmpty() && !libraryID.isEmpty()) {
-                result = getAvailabilityByBookNameAndLibraryID(bookName, libraryID);
-            } else if (libraryID.isEmpty()) {
-                displayResultNoLibraryIDEntered();
-                return;
-            }
-
-            // Call a function to display the result in resultArea
+            ResultSet result = checkForEvents(libraryID);
             displayResult(result);
         });
+        
+        
 
         // Back button to get back to the main page.
         JButton backButton = new JButton("Back");
@@ -95,52 +83,45 @@ public class CheckAvailabilityPage {
         }
     }
 
-    public ResultSet getAvailabilityByBookNameAndLibraryID(String bookName, String libraryID) {
-        String query = "SELECT BOOK.BookName, AVAILABILITY.LibraryID, AVAILABILITY.Quantity " +
-                "FROM BOOK " +
-                "INNER JOIN AVAILABILITY ON BOOK.BookID = AVAILABILITY.BookID " +
-                "INNER JOIN LIBRARY ON AVAILABILITY.LibraryID = LIBRARY.LibraryID " +
-                "WHERE BOOK.BookName = ? AND AVAILABILITY.LibraryID = ?";
-
+    public ResultSet checkForEvents(String libraryID) {
+        String query = "SELECT DateOfEvent as 'Event Date', EventName as 'Event Name', EventDescription as 'Description' " +
+                       "FROM EVENT " +
+                       "WHERE LibraryID = ?";
+    
         try {
             PreparedStatement stmt = getConnection().prepareStatement(query);
-            stmt.setString(1, bookName);
-            stmt.setString(2, libraryID);
+            stmt.setString(1, libraryID);
             return stmt.executeQuery();
         } catch (SQLException ex) {
             ex.printStackTrace();
             return null;
         }
     }
-
+    
+    
     public void displayResult(ResultSet result) {
         StringBuilder resultText = new StringBuilder("Results:\n");
         try {
-            boolean bookAvailable = false;
-            ResultSetMetaData metaData = result.getMetaData();
-            int columnCount = metaData.getColumnCount();
-
-            while (result != null && result.next()) {
-                for (int i = 1; i <= columnCount; i++) {
-                    String columnName = metaData.getColumnLabel(i);
-                    String value = result.getString(i);
-                    resultText.append(columnName).append(": ").append(value).append("\n");
-                }
-                bookAvailable = true;
-                resultText.append("\n");
-            }
-
-            if (!bookAvailable) {
-                resultText.append("Book not available at the specified library.");
+            if (result != null && result.next()) {
+                resultText.append("Upcoming Events:\n");
+                do {
+                    String eventDate = result.getString("Event Date");
+                    String eventName = result.getString("Event Name");
+                    String eventDescription = result.getString("Description");
+    
+                    resultText.append("Event Date: ").append(eventDate).append("\n");
+                    resultText.append("Event Name: ").append(eventName).append("\n");
+                    resultText.append("Description: ").append(eventDescription).append("\n\n");
+                } while (result.next());
+            } else {
+                resultText.append("No upcoming events at the specified library ID.\n");
             }
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
+    
         resultArea.setFont(new Font("Courier New", Font.PLAIN, 12));
         resultArea.setText(resultText.toString());
     }
-
-    public void displayResultNoLibraryIDEntered() {
-        resultArea.setText("No LibraryID was entered.");
-    }
+    
 }

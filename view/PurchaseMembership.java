@@ -10,18 +10,19 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
 import java.sql.*;
+import java.time.LocalDate;
 
 /**
  * This class is responsible for handling the following:
- * Get a list of the customers' name, state name, City name, zip code, email, and phone number of all customers with a given name.
+ * Purchase a membership with this library franchise.
  */
-public class CustomerDetailsPage {
+public class PurchaseMembership {
     private static JFrame myFrame;
     private JTextField nameField;
     private JTextArea resultArea;
 
-    public CustomerDetailsPage() {
-        myFrame = new JFrame("Customer Details");
+    public PurchaseMembership() {
+        myFrame = new JFrame("Purchase Library Membership");
         myFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         myFrame.setSize(600, 400);
 
@@ -32,14 +33,14 @@ public class CustomerDetailsPage {
         nameField = new JTextField();
         myPanel.add(nameField);
 
-        JButton checkButton = new JButton("Get Details");
-        myPanel.add(checkButton);
-        checkButton.addActionListener(e -> {
+        JButton purchaseButton = new JButton("Purchase Membership");
+        myPanel.add(purchaseButton);
+        purchaseButton.addActionListener(e -> {
             String customerName = nameField.getText();
 
             ResultSet result = null;
             if (!customerName.isEmpty()) {
-                result = getCustomerDetails(customerName);
+                result = purchaseMembership(customerName);
             }
 
             // Call a function to display the result in resultArea
@@ -87,43 +88,59 @@ public class CustomerDetailsPage {
         }
     }
 
-    public ResultSet getCustomerDetails(String customerName) {
-        String query = "SELECT C.CustomerName, CI.CityName, S.StateName, Z.ZipCode, C.Email, C.Phone " +
-                "FROM CUSTOMER C INNER JOIN CITY CI ON C.CityID = CI.CityID " +
-                "INNER JOIN STATE S ON C.StateID = S.StateID INNER JOIN ZIP Z ON C.ZipCode = Z.ZipCode " +
-                "WHERE C.CustomerName LIKE ?";
-
+    public ResultSet purchaseMembership(String customerName) {
         try {
-            Connection conn = getConnection();
-            PreparedStatement stmt = conn.prepareStatement(query);
-            stmt.setString(1, "%" + customerName + "%");
-            return stmt.executeQuery();
+            // Check if the customer name exists in the database
+            String checkQuery = "SELECT * FROM CUSTOMER WHERE CustomerName = ?";
+            PreparedStatement checkStmt = getConnection().prepareStatement(checkQuery);
+            checkStmt.setString(1, customerName);
+            ResultSet checkResult = checkStmt.executeQuery();
+            if (!checkResult.next()) {
+                return null; // Customer name does not exist in the database
+            }
+    
+            // Purchase a new membership
+            LocalDate startDate = LocalDate.now();
+            LocalDate endDate = startDate.plusMonths(1);
+    
+            String purchaseQuery = "DECLARE @NewMembershipID INT;" +
+                    "BEGIN TRANSACTION;" +
+                    "INSERT INTO MEMBERSHIP(StartDate, EndDate) VALUES (?, ?);" +
+                    "SET @NewMembershipID = SCOPE_IDENTITY();" +
+                    "UPDATE CUSTOMER SET MembershipID = @NewMembershipID WHERE CustomerName = ?;" +
+                    "COMMIT;";
+            PreparedStatement purchaseStmt = getConnection().prepareStatement(purchaseQuery);
+            purchaseStmt.setString(1, startDate.toString());
+            purchaseStmt.setString(2, endDate.toString());
+            purchaseStmt.setString(3, customerName);
+            purchaseStmt.executeUpdate();
+    
+            // Retrieve the updated customer information
+            String retrieveQuery = "SELECT * FROM CUSTOMER WHERE CustomerName = ?";
+            PreparedStatement retrieveStmt = getConnection().prepareStatement(retrieveQuery);
+            retrieveStmt.setString(1, customerName);
+            return retrieveStmt.executeQuery();
         } catch (SQLException ex) {
             ex.printStackTrace();
             return null;
         }
-    }
+    }    
 
     public void displayResult(ResultSet result) {
         StringBuilder resultText = new StringBuilder("Results:\n");
         try {
-            if (!result.isBeforeFirst()) {
-                resultText.append("No customer details were found under the given name.");
+            if (result == null) {
+                resultText.append("This customer name does not exist in the database.");
             } else {
+                resultText.append("PURCHASE SUCCESSFUL! Here is your membership info:\n");
                 while (result.next()) {
+                    int customerID = result.getInt("CustomerID");
                     String customerName = result.getString("CustomerName");
-                    String customerCity = result.getString("CityName");
-                    String customerState = result.getString("StateName");
-                    String customerZip = result.getString("Zipcode");
-                    String customerEmail = result.getString("Email");
-                    String customerPhone = result.getString("Phone");
+                    int membershipID = result.getInt("MembershipID");
 
-                    String line = "Name: " + customerName + "\n";
-                    line += "City: " + customerCity + "\n";
-                    line += "State: " + customerState + "\n";
-                    line += "Zipcode: " + customerZip + "\n";
-                    line += "Email " + customerEmail + "\n";
-                    line += "Phone number: " + customerPhone + "\n";
+                    String line = "Customer ID: " + customerID + "\n";
+                    line += "Customer Name: " + customerName + "\n";
+                    line += "Membership ID: " + membershipID + "\n";
 
                     resultText.append(line).append("\n");
                 }
