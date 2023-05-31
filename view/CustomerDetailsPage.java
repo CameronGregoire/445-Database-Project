@@ -35,15 +35,15 @@ public class CustomerDetailsPage {
         JButton checkButton = new JButton("Get Details");
         myPanel.add(checkButton);
         checkButton.addActionListener(e -> {
-            String customerName = nameField.getText();
-
-            ResultSet result = null;
-            if (!customerName.isEmpty()) {
-                result = getCustomerDetails(customerName);
+            String customerName = nameField.getText().trim(); // trimming leading and trailing white spaces
+        
+            if (customerName.isEmpty()) {
+                JOptionPane.showMessageDialog(null, "No customer name was entered. Please enter a customer name.");
+            } else {
+                ResultSet result = getCustomerDetails(customerName);
+                // Call a function to display the result in resultArea
+                displayResult(result);
             }
-
-            // Call a function to display the result in resultArea
-            displayResult(result);
         });
 
         // Back button to get back to the main page.

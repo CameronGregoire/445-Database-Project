@@ -45,8 +45,8 @@ public class CheckAvailabilityPage {
             ResultSet result = null;
             if (!bookName.isEmpty() && !libraryID.isEmpty()) {
                 result = getAvailabilityByBookNameAndLibraryID(bookName, libraryID);
-            } else if (libraryID.isEmpty()) {
-                displayResultNoLibraryIDEntered();
+            } else if (libraryID.isEmpty() || bookName.isEmpty()) {
+                displayResultNoDataEntered();
                 return;
             }
 
@@ -140,7 +140,7 @@ public class CheckAvailabilityPage {
         resultArea.setText(resultText.toString());
     }
 
-    public void displayResultNoLibraryIDEntered() {
-        resultArea.setText("No LibraryID was entered.");
+    public void displayResultNoDataEntered() {
+        resultArea.setText("A field was left blank.");
     }
 }
