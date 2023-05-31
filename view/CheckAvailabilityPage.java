@@ -92,13 +92,11 @@ public class CheckAvailabilityPage {
     }
 
     public ResultSet getAvailabilityByBookNameAndLibraryID(String bookName, String libraryID) {
-        String query = "SELECT BOOK.BookID, BOOK.BookName as 'Book Name', BOOK.PageCount as 'Page Count', " +
-                       "BOOK.AuthorName as 'Author Name', PUBLISHER.PublisherName as 'Publisher Name' " +
+        String query = "SELECT BOOK.BookName, LIBRARY.LibraryID, AVAILABILITY.Quantity " +
                        "FROM BOOK " +
                        "INNER JOIN AVAILABILITY ON BOOK.BookID = AVAILABILITY.BookID " +
                        "INNER JOIN LIBRARY ON AVAILABILITY.LibraryID = LIBRARY.LibraryID " +
-                       "INNER JOIN PUBLISHER ON BOOK.PublisherID = PUBLISHER.PublisherID " +
-                       "WHERE BOOK.BookName = ? AND AVAILABILITY.LibraryID = ?";
+                       "WHERE BOOK.BookName = ? AND LIBRARY.LibraryID = ?";
     
         try {
             PreparedStatement stmt = getConnection().prepareStatement(query);
@@ -111,6 +109,7 @@ public class CheckAvailabilityPage {
         }
     }
     
+
     public void displayResult(ResultSet result) {
         StringBuilder resultText = new StringBuilder("Results:\n");
         try {
