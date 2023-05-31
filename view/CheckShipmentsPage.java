@@ -13,15 +13,15 @@ import java.sql.*;
 
 /**
  * This class is responsible for handling the following:
- * Check the availability of a book given a specified LibraryID (int value).
+ * Check if (when and where/date and LibraryID) there are any upcoming shipments of a specified book name.
  */
-public class CheckAvailabilityPage {
+public class CheckShipmentsPage {
     private static JFrame myFrame;
-    private JTextField nameField, libraryField;
+    private JTextField nameField;
     private JTextArea resultArea;
 
-    public CheckAvailabilityPage() {
-        myFrame = new JFrame("Check Availability");
+    public CheckShipmentsPage() {
+        myFrame = new JFrame("Check for Upcoming Shipments");
         myFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         myFrame.setSize(600, 400);
 
@@ -32,24 +32,20 @@ public class CheckAvailabilityPage {
         nameField = new JTextField();
         myPanel.add(nameField);
 
-        myPanel.add(new JLabel("LibraryID: "));
-        libraryField = new JTextField();
-        myPanel.add(libraryField);
-
-        JButton checkButton = new JButton("Check Availability");
+        JButton checkButton = new JButton("Check For Book's Shipments");
         myPanel.add(checkButton);
         checkButton.addActionListener(e -> {
             String bookName = nameField.getText();
-            String libraryID = libraryField.getText();
-            
+
             ResultSet result = null;
-            if (!bookName.isEmpty() && !libraryID.isEmpty()) {
-                result = getAvailabilityByBookNameAndLibraryID(bookName, libraryID);
+            if (!bookName.isEmpty()) {
+                result = getUpcomingShipmentsOfBookName(bookName);
             }
 
             // Call a function to display the result in resultArea
             displayResult(result);
         });
+
         // Back button to get back to the main page.
         JButton backButton = new JButton("Back");
         backButton.addActionListener(new ActionListener() {
@@ -91,48 +87,46 @@ public class CheckAvailabilityPage {
         }
     }
 
-    public ResultSet getAvailabilityByBookNameAndLibraryID(String bookName, String libraryID) {
-        String query = "SELECT BOOK.BookName, AVAILABILITY.LibraryID, AVAILABILITY.Quantity " +
-                       "FROM BOOK " +
-                       "INNER JOIN AVAILABILITY ON BOOK.BookID = AVAILABILITY.BookID " +
-                       "INNER JOIN LIBRARY ON AVAILABILITY.LibraryID = LIBRARY.LibraryID " +
-                       "WHERE BOOK.BookName = ? AND AVAILABILITY.LibraryID = ?";
-    
+    public ResultSet getUpcomingShipmentsOfBookName(String bookName) {
+        String query = "SELECT SHIPMENT.ShipmentDate, LIBRARY.LibraryID, LIBRARY.CityID, LIBRARY.StateID, LIBRARY.ZipCode " +
+                       "FROM SHIPMENT " +
+                       "INNER JOIN LIBRARY ON SHIPMENT.LibraryID = LIBRARY.LibraryID " +
+                       "INNER JOIN BOOK ON SHIPMENT.BookID = BOOK.BookID " +
+                       "WHERE BOOK.BookName = ? AND SHIPMENT.ShipmentDate >= CURRENT_DATE()";
+
         try {
             PreparedStatement stmt = getConnection().prepareStatement(query);
             stmt.setString(1, bookName);
-            stmt.setString(2, libraryID);
             return stmt.executeQuery();
         } catch (SQLException ex) {
             ex.printStackTrace();
             return null;
         }
     }
-    
+
     public void displayResult(ResultSet result) {
         StringBuilder resultText = new StringBuilder("Results:\n");
         try {
-            boolean bookAvailable = false;
-            ResultSetMetaData metaData = result.getMetaData();
-            int columnCount = metaData.getColumnCount();
-    
             while (result != null && result.next()) {
-                for (int i = 1; i <= columnCount; i++) {
-                    String columnName = metaData.getColumnLabel(i);
-                    String value = result.getString(i);
-                    resultText.append(columnName).append(": ").append(value).append("\n");
-                }
-                bookAvailable = true;
-                resultText.append("\n");
-            }
+                String shipmentDate = result.getString("ShipmentDate");
+                String libraryID = result.getString("LibraryID");
+                String cityID = result.getString("CityID");
+                String stateID = result.getString("StateID");
+                String zipCode = result.getString("ZipCode");
 
-            if (!bookAvailable) {
-                resultText.append("Book not available at the specified library.");
+                String line = "Shipment Date: " + shipmentDate + "\n";
+                line += "Library ID: " + libraryID + "\n";
+                line += "City ID: " + cityID + "\n";
+                line += "State ID: " + stateID + "\n";
+                line += "Zip Code: " + zipCode + "\n";
+
+                resultText.append(line).append("\n");
             }
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
+
         resultArea.setFont(new Font("Courier New", Font.PLAIN, 12));
         resultArea.setText(resultText.toString());
-    }    
+    }
 }

@@ -70,7 +70,16 @@ public class MainPage {
                 new CheckAvailabilityPage();
             }
         });
+
         JButton button3 = new JButton("Find a Book's Shipment Dates...");
+        button3.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                myFrame.setVisible(false);
+                new CheckShipmentsPage();
+            }
+        });
+
         JButton button4 = new JButton("Purchase a Library Membership...");
         JButton button5 = new JButton("Check for Events...");
         JButton button6 = new JButton("Check all Incoming Shipments...");
