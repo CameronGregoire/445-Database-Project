@@ -76,6 +76,11 @@ public class CustomerDetailsPage {
         myFrame.setVisible(true);
     }
 
+    /**
+     * This method connects to the database.
+     * 
+     * @return  The connection to the database.
+     */
     public Connection getConnection() {
         try {
             String url = "jdbc:sqlserver://localhost:1433;databaseName=LibraryDB;integratedSecurity=true;trustServerCertificate=true;";
@@ -87,6 +92,13 @@ public class CustomerDetailsPage {
         }
     }
 
+    /**
+     * This method performs the primary function of this class.
+     * It will get the details of any customers by searching for the given name.
+     * 
+     * @param customerName  The name to search details for.
+     * @return  The resulting details of all customers with the given name.
+     */
     public ResultSet getCustomerDetails(String customerName) {
         String query = "SELECT C.CustomerName, CI.CityName, S.StateName, Z.ZipCode, C.Email, C.Phone " +
                 "FROM CUSTOMER C INNER JOIN CITY CI ON C.CityID = CI.CityID " +
@@ -104,6 +116,11 @@ public class CustomerDetailsPage {
         }
     }
 
+    /**
+     * Displays the results of the primary function to the user.
+     * 
+     * @param result    The result of the function.
+     */
     public void displayResult(ResultSet result) {
         StringBuilder resultText = new StringBuilder("Results:\n");
         try {
