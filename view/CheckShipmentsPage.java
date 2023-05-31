@@ -88,23 +88,21 @@ public class CheckShipmentsPage {
     }
 
     public ResultSet getUpcomingShipmentsOfBookName(String bookName) {
-        String query = "SELECT BOOK.BookName as 'Book Name', LIBRARY.LibraryID as 'Library ID', " +
-        "AVAILABILITY.Quantity as 'Available Quantity' " +
-        "FROM BOOK " +
-        "INNER JOIN AVAILABILITY ON BOOK.BookID = AVAILABILITY.BookID " +
-        "INNER JOIN LIBRARY ON AVAILABILITY.LibraryID = LIBRARY.LibraryID " +
-        "INNER JOIN PUBLISHER ON BOOK.PublisherID = PUBLISHER.PublisherID " +
-        "WHERE BOOK.BookName = ? AND AVAILABILITY.LibraryID = ? " +
-        "AND CONVERT(DATE, AVAILABILITY.ShipDate, 101) >= CONVERT(DATE, GETDATE(), 101)";
+        String query = "SELECT SHIPMENT.ShipmentID, SHIPMENT.ShipDate, SHIPMENT.Description, LIBRARY.LibraryID " +
+                       "FROM SHIPMENT " +
+                       "INNER JOIN LIBRARY ON SHIPMENT.LibraryID = LIBRARY.LibraryID " +
+                       "WHERE SHIPMENT.Description LIKE ? AND CONVERT(DATE, SHIPMENT.ShipDate, 101) >= CONVERT(DATE, GETDATE(), 101)";
+    
         try {
             PreparedStatement stmt = getConnection().prepareStatement(query);
-            stmt.setString(1, bookName);
+            stmt.setString(1, "%" + bookName + "%");
             return stmt.executeQuery();
         } catch (SQLException ex) {
             ex.printStackTrace();
             return null;
         }
     }
+    
 
     public void displayResult(ResultSet result) {
         StringBuilder resultText = new StringBuilder("Results:\n");
