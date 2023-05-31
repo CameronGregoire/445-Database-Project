@@ -71,6 +71,11 @@ public class FindNextBillingCyclePage {
         myFrame.setVisible(true);
     }
 
+    /**
+     * This method connects to the database.
+     * 
+     * @return  The connection to the database.
+     */
     public Connection getConnection() {
         try {
             String url = "jdbc:sqlserver://localhost:1433;databaseName=LibraryDB;integratedSecurity=true;trustServerCertificate=true;";
@@ -82,6 +87,12 @@ public class FindNextBillingCyclePage {
         }
     }
 
+    /**
+     * This performs the primary function of this page.
+     * 
+     * @param membershipID  The membership ID to check the billing cylce of.
+     * @return  The next billing cycle, or tell them that the membership is expired.
+     */
     public ResultSet checkForNextBillingCycle(String membershipID) {
         try {
             Connection conn = getConnection();
@@ -97,6 +108,11 @@ public class FindNextBillingCyclePage {
         }
     }
 
+    /**
+     * Displays the results of the primary function to the user.
+     * 
+     * @param result    The result of the function.
+     */
     public void displayResult(ResultSet result) {
         try {
             if (result.next()) {

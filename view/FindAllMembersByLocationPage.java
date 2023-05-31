@@ -83,6 +83,11 @@ public class FindAllMembersByLocationPage {
         myFrame.setVisible(true);
     }
 
+    /**
+     * This method connects to the database.
+     * 
+     * @return  The connection to the database.
+     */
     public Connection getConnection() {
         try {
             String url = "jdbc:sqlserver://localhost:1433;databaseName=LibraryDB;integratedSecurity=true;trustServerCertificate=true;";
@@ -94,6 +99,15 @@ public class FindAllMembersByLocationPage {
         }
     }
 
+    /**
+     * This method performs the primary function of the page.
+     * It will find a listing of all customers that have or had a member by the given location.
+     * 
+     * @param stateName The name of the state to search in.
+     * @param cityName  The name of the city to search in.
+     * @param zipCode   The zip code to search in.
+     * @return  The resulting customers found.
+     */
     public ResultSet findMembersByLocation(String stateName, String cityName, String zipCode) {
         try {
             Connection conn = getConnection();
@@ -125,7 +139,11 @@ public class FindAllMembersByLocationPage {
         }
     }
     
-    
+    /**
+     * Displays the results of the primary function to the user.
+     * 
+     * @param result    The result of the function.
+     */
     public void displayResult(ResultSet result) {
         try {
             if (!result.isBeforeFirst()) {

@@ -83,6 +83,11 @@ public class UpdateBookQuantityPage {
         myFrame.setVisible(true);
     }
 
+    /**
+     * This method connects to the database.
+     * 
+     * @return  The connection to the database.
+     */
     public Connection getConnection() {
         try {
             String url = "jdbc:sqlserver://localhost:1433;databaseName=LibraryDB;integratedSecurity=true;trustServerCertificate=true;";
@@ -94,6 +99,15 @@ public class UpdateBookQuantityPage {
         }
     }
 
+    /**
+     * This method runs the primary function of this page using the given parameters.
+     * It will update the quantity of the given book at the given library by the given amount.
+     * 
+     * @param libraryID The ID of the library to change the quantity at.
+     * @param bookName  The name of the book to be changed.
+     * @param quantityChange    The quantity to change.
+     * @return  The result set that includes the results to display to the user.
+     */
     public ResultSet updateBookQuantity(String libraryID, String bookName, String quantityChange) {
         try {
             // Validate inputs
@@ -143,6 +157,11 @@ public class UpdateBookQuantityPage {
         }
     }
     
+    /**
+     * Displays the results of the primary function to the user.
+     * 
+     * @param result    The result of the function.
+     */
     public void displayResult(ResultSet result) {
         if (result == null) {
             resultArea.setText("That LibraryID does not sell that book.");

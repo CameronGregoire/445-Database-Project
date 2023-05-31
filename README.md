@@ -4,12 +4,12 @@ By: Nickolas Zahos, Cameron Gregoire
 Project Group #13
 
 ## Preface and Pre-requisites
-For our program we chose to usethe 'JDBC' API to run the conncetion between our program and the actual database.
+For our program we chose to use the 'JDBC' API to run the conncetion between our program and the actual database.
 
 We will assume you are running on a Windows machine, and have downloaded Microsoft SQL Server 2022.
 We will also assume you have ran our 'Library DB TOTAL.sql' in Microsoft SQL Server Management Studio which creates the database, enters data, and runs some test queries.
 We will assume you also have this data base (named LibraryDB) currently up and running before running our java program.
-We will also assume you know how to correctly add the JDBC.jar driver we included into your IDE's project classpath if it does not auto-recognize our .classpath file included.
+We will also assume you know how to correctly add the JDBC.jar driver we included into your IDE's project classpath as a project dependency if it does not auto-recognize our .classpath file included.
 
 If the computer you are running this program on has not been setup for JDBC drivers, you will need to do the following:
 1. Clone our repository or download the project manually into an IDE of your choice (we recommend VS Code as it is what we used for this project).

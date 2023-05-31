@@ -154,6 +154,11 @@ public class RegisterAsNewCustomerPage {
         myFrame.setVisible(true);
     }
 
+    /**
+     * This method connects to the database.
+     * 
+     * @return  The connection to the database.
+     */
     public Connection getConnection() {
         try {
             String url = "jdbc:sqlserver://localhost:1433;databaseName=LibraryDB;integratedSecurity=true;trustServerCertificate=true;";
@@ -165,6 +170,18 @@ public class RegisterAsNewCustomerPage {
         }
     }
 
+    /**
+     * This method performs the primary function of the page.
+     * It will register a new customer under the given address, name, email, and phone.
+     * 
+     * @param customerName  The name of the customer.
+     * @param customerState The name of the state.
+     * @param customerCity  The name of the city.
+     * @param customerZip   The zip code.
+     * @param customerEmail The customer email.
+     * @param customerPhone The custmer phone.
+     * @return  Return the string result of if the register.
+     */
     public String registerAsNewCustomer(String customerName, String customerState, String customerCity, String customerZip, String customerEmail, String customerPhone) {
         try {
             Connection conn = getConnection();
@@ -222,8 +239,11 @@ public class RegisterAsNewCustomerPage {
         }
     }
     
-    
-
+    /**
+     * Displays the results of the primary function to the user.
+     * 
+     * @param result    The result of the function.
+     */
     public void displayResult(String result) {
         resultArea.setFont(new Font("Courier New", Font.PLAIN, 12));
         resultArea.setText("");
