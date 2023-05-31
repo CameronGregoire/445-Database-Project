@@ -60,11 +60,20 @@ public class SearchBookPage {
             ResultSet result = null;
             if (!bookName.isEmpty()) {
                 result = getBooksByName(bookName);
-            } // Similarly, add conditions for other fields
-            
+            } else if (!authorName.isEmpty()) {
+                result = getBooksByAuthor(authorName);
+            } else if (!genre.isEmpty()) {
+                result = getBooksByGenre(genre);
+            } else if (!rating.isEmpty()) {
+                result = getBooksByRating(rating);
+            } else if (!publisher.isEmpty()) {
+                result = getBooksByPublisher(publisher);
+            }
+
             // Call a function to display the result in resultArea
             displayResult(result);
         });
+
         
 
         // Back button to get back to the main page.
@@ -122,6 +131,66 @@ public class SearchBookPage {
             return null;
         }
     }
+
+    public ResultSet getBooksByAuthor(String authorName) {
+        String query = "SELECT BOOK.BookID, BOOK.BookName as 'Book Name', BOOK.PageCount as 'Page Count', " +
+                       "BOOK.AuthorName as 'Author Name', PUBLISHER.PublisherName as 'Publisher Name' " +
+                       "FROM BOOK INNER JOIN PUBLISHER ON PUBLISHER.PublisherID = BOOK.PublisherID " +
+                       "WHERE AuthorName = ?";
+        try {
+            PreparedStatement stmt = getConnection().prepareStatement(query);
+            stmt.setString(1, authorName);
+            return stmt.executeQuery();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            return null;
+        }
+    }
+    
+    public ResultSet getBooksByGenre(String genre) {
+        String query = "SELECT BOOK.BookID, BOOK.BookName as 'Book Name', BOOK.PageCount as 'Page Count', " +
+                       "BOOK.AuthorName as 'Author Name', PUBLISHER.PublisherName as 'Publisher Name' " +
+                       "FROM BOOK INNER JOIN PUBLISHER ON PUBLISHER.PublisherID = BOOK.PublisherID " +
+                       "WHERE Genre = ?";
+        try {
+            PreparedStatement stmt = getConnection().prepareStatement(query);
+            stmt.setString(1, genre);
+            return stmt.executeQuery();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            return null;
+        }
+    }
+    
+    public ResultSet getBooksByRating(String rating) {
+        String query = "SELECT BOOK.BookID, BOOK.BookName as 'Book Name', BOOK.PageCount as 'Page Count', " +
+                       "BOOK.AuthorName as 'Author Name', PUBLISHER.PublisherName as 'Publisher Name' " +
+                       "FROM BOOK INNER JOIN PUBLISHER ON PUBLISHER.PublisherID = BOOK.PublisherID " +
+                       "WHERE Rating = ?";
+        try {
+            PreparedStatement stmt = getConnection().prepareStatement(query);
+            stmt.setString(1, rating);
+            return stmt.executeQuery();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            return null;
+        }
+    }
+    
+    public ResultSet getBooksByPublisher(String publisherName) {
+        String query = "SELECT BOOK.BookID, BOOK.BookName as 'Book Name', BOOK.PageCount as 'Page Count', " +
+                       "BOOK.AuthorName as 'Author Name', PUBLISHER.PublisherName as 'Publisher Name' " +
+                       "FROM BOOK INNER JOIN PUBLISHER ON PUBLISHER.PublisherID = BOOK.PublisherID " +
+                       "WHERE PublisherName = ?";
+        try {
+            PreparedStatement stmt = getConnection().prepareStatement(query);
+            stmt.setString(1, publisherName);
+            return stmt.executeQuery();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            return null;
+        }
+    }    
 
     public void displayResult(ResultSet result) {
         StringBuilder resultText = new StringBuilder("Results:\n");
