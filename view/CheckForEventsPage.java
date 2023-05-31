@@ -2,13 +2,11 @@ package view;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-
 import java.sql.*;
 
 /**
@@ -20,6 +18,9 @@ public class CheckForEventsPage {
     private JTextField libraryField;
     private JTextArea resultArea;
 
+    /**
+     * Constructs a CheckForEventsPage object and initializes the GUI.
+     */
     public CheckForEventsPage() {
         myFrame = new JFrame("Check for Events");
         myFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -28,6 +29,7 @@ public class CheckForEventsPage {
         JPanel myPanel = new JPanel(new GridLayout(6, 2));
         myPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 
+        // Add label and text field for entering the library ID
         myPanel.add(new JLabel("LibraryID (1-5): "));
         libraryField = new JTextField();
         myPanel.add(libraryField);
@@ -39,10 +41,7 @@ public class CheckForEventsPage {
             ResultSet result = checkForEvents(libraryID);
             displayResult(result);
         });
-        
-        
 
-        // Back button to get back to the main page.
         JButton backButton = new JButton("Back");
         backButton.addActionListener(new ActionListener() {
             @Override
@@ -52,7 +51,6 @@ public class CheckForEventsPage {
             }
         });
 
-        // Make sure that if the user clicks the 'X', the main page is restored
         myFrame.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
@@ -72,8 +70,14 @@ public class CheckForEventsPage {
         myFrame.setVisible(true);
     }
 
+    /**
+     * Establishes a connection to the database.
+     *
+     * @return the connection object
+     */
     public Connection getConnection() {
         try {
+            // Connection URL for the database
             String url = "jdbc:sqlserver://localhost:1433;databaseName=LibraryDB;integratedSecurity=true;trustServerCertificate=true;";
             Connection conn = DriverManager.getConnection(url);
             return conn;
@@ -83,11 +87,17 @@ public class CheckForEventsPage {
         }
     }
 
+    /**
+     * Retrieves upcoming events for the specified library from the database.
+     *
+     * @param libraryID the ID of the library
+     * @return a ResultSet containing the upcoming events
+     */
     public ResultSet checkForEvents(String libraryID) {
         String query = "SELECT DateOfEvent as 'Event Date', EventName as 'Event Name', EventDescription as 'Description' " +
-                       "FROM EVENT " +
-                       "WHERE LibraryID = ?";
-    
+                "FROM EVENT " +
+                "WHERE LibraryID = ?";
+
         try {
             PreparedStatement stmt = getConnection().prepareStatement(query);
             stmt.setString(1, libraryID);
@@ -97,8 +107,12 @@ public class CheckForEventsPage {
             return null;
         }
     }
-    
-    
+
+    /**
+     * Displays the result set in the text area.
+     *
+     * @param result the result set to display
+     */
     public void displayResult(ResultSet result) {
         StringBuilder resultText = new StringBuilder("Results:\n");
         try {
@@ -108,7 +122,7 @@ public class CheckForEventsPage {
                     String eventDate = result.getString("Event Date");
                     String eventName = result.getString("Event Name");
                     String eventDescription = result.getString("Description");
-    
+
                     resultText.append("Event Date: ").append(eventDate).append("\n");
                     resultText.append("Event Name: ").append(eventName).append("\n");
                     resultText.append("Description: ").append(eventDescription).append("\n\n");
@@ -119,9 +133,9 @@ public class CheckForEventsPage {
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
-    
+
         resultArea.setFont(new Font("Courier New", Font.PLAIN, 12));
         resultArea.setText(resultText.toString());
     }
-    
 }
+

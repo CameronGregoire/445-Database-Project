@@ -16,22 +16,30 @@ import java.sql.*;
  * Get a list of ALL incoming/upcoming shipments at a given LibraryID.
  */
 public class CheckAllShipmentsPage {
-    private static JFrame myFrame;
-    private JTextField libraryIDField;
-    private JTextArea resultArea;
+    private static JFrame myFrame; // Frame for the GUI
+    private JTextField libraryIDField; // Text field for entering the LibraryID
+    private JTextArea resultArea; // Text area for displaying the query results
 
+    /**
+     * Constructor for the CheckAllShipmentsPage class.
+     * Sets up the GUI components and event listeners.
+     */
     public CheckAllShipmentsPage() {
+        // Create the JFrame and set its properties
         myFrame = new JFrame("Check All Incoming Shipments");
         myFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         myFrame.setSize(600, 400);
 
+        // Create a JPanel with a grid layout and border
         JPanel myPanel = new JPanel(new GridLayout(6, 2));
         myPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 
+        // Add a label and text field for the LibraryID
         myPanel.add(new JLabel("LibraryID (1-5): "));
         libraryIDField = new JTextField();
         myPanel.add(libraryIDField);
 
+        // Add a button to check for incoming shipments
         JButton checkButton = new JButton("Check For All Incoming Shipments");
         myPanel.add(checkButton);
         checkButton.addActionListener(e -> {
@@ -42,11 +50,11 @@ public class CheckAllShipmentsPage {
                 result = checkForAllIncomingShipments(libraryID);
             }
 
-            // Call a function to display the result in resultArea
+            // Call a function to display the result in the resultArea
             displayResult(result);
         });
 
-        // Back button to get back to the main page.
+        // Add a back button to return to the main page
         JButton backButton = new JButton("Back");
         backButton.addActionListener(new ActionListener() {
             @Override
@@ -56,7 +64,7 @@ public class CheckAllShipmentsPage {
             }
         });
 
-        // Make sure that if the user clicks the 'X', the main page is restored
+        // Add a window listener to restore the main page when the JFrame is closed
         myFrame.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
@@ -64,6 +72,7 @@ public class CheckAllShipmentsPage {
             }
         });
 
+        // Create a text area for displaying the query results
         resultArea = new JTextArea();
         resultArea.setEditable(false);
         JScrollPane scrollPane = new JScrollPane(resultArea);
@@ -76,6 +85,10 @@ public class CheckAllShipmentsPage {
         myFrame.setVisible(true);
     }
 
+    /**
+     * Establishes a connection to the database.
+     * @return the Connection object or null if an error occurs
+     */
     public Connection getConnection() {
         try {
             String url = "jdbc:sqlserver://localhost:1433;databaseName=LibraryDB;integratedSecurity=true;trustServerCertificate=true;";
@@ -86,7 +99,12 @@ public class CheckAllShipmentsPage {
             return null;
         }
     }
-    
+  
+    /**
+     * Executes a query to retrieve all incoming shipments for the specified LibraryID.
+     * @param libraryID the LibraryID to search for
+     * @return the ResultSet containing the query results or null if an error occurs
+     */
     public ResultSet checkForAllIncomingShipments(String libraryID) {
         String query = "SELECT * FROM SHIPMENT WHERE LibraryID = ?";
         try {
@@ -99,6 +117,10 @@ public class CheckAllShipmentsPage {
         }
     }
 
+    /**
+     * Displays the query results in the resultArea.
+     * @param result the ResultSet containing the query results
+     */
     public void displayResult(ResultSet result) {
         StringBuilder resultText = new StringBuilder("Results:\n");
         try {
@@ -124,4 +146,10 @@ public class CheckAllShipmentsPage {
         resultArea.setFont(new Font("Courier New", Font.PLAIN, 12));
         resultArea.setText(resultText.toString());
     }
+
+    // Main method for testing the CheckAllShipmentsPage class
+    public static void main(String[] args) {
+        new CheckAllShipmentsPage();
+    }
 }
+
