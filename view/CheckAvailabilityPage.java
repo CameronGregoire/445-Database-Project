@@ -134,5 +134,5 @@ public class CheckAvailabilityPage {
         
         resultArea.setFont(new Font("Courier New", Font.PLAIN, 12));
         resultArea.setText(resultText.toString());
-    }      
+    }       
 }
