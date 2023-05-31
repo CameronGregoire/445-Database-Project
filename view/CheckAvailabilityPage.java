@@ -36,9 +36,9 @@ public class CheckAvailabilityPage {
         libraryField = new JTextField();
         myPanel.add(libraryField);
 
-        JButton searchButton = new JButton("Check Availability");
-        myPanel.add(searchButton);
-        searchButton.addActionListener(e -> {
+        JButton checkButton = new JButton("Check Availability");
+        myPanel.add(checkButton);
+        checkButton.addActionListener(e -> {
             String bookName = nameField.getText();
             String libraryID = libraryField.getText();
             
@@ -124,5 +124,6 @@ public class CheckAvailabilityPage {
             ex.printStackTrace();
         }
         resultArea.setText(resultText.toString());
-    }    
+    }
+    
 }
