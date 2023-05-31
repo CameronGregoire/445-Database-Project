@@ -13,6 +13,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+/**
+ * This class is responsible for handling the following:
+ * Register with the library (as a new Customer) given a customer name, state name, City name, zip code, email, and phone number.
+ */
 public class RegisterAsNewCustomerPage {
     private static JFrame myFrame;
     private JTextField customerNameField, customerStateField, customerCityField, customerZipField, customerEmailField, customerPhoneField;
