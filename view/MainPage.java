@@ -63,6 +63,13 @@ public class MainPage {
         });
         
         JButton button2 = new JButton("Check Availability of a Book...");
+        button2.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                myFrame.setVisible(false);
+                new CheckAvailabilityPage();
+            }
+        });
         JButton button3 = new JButton("Find a Book's Shipment Dates...");
         JButton button4 = new JButton("Purchase a Library Membership...");
         JButton button5 = new JButton("Check for Events...");

@@ -4,44 +4,68 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+
 import java.sql.*;
 
 /**
- * This is the UI class that performs the following with our library database:
- * Check the availability of a book (given the book name) at a specified LibraryID (int value).
- * We are basically checking the availability of a book at the specified library.
+ * This class is responsible for handling the following:
+ * Get a list of books by given book name, author name, book genre, rating (float value), or publisher.
  */
 public class CheckAvailabilityPage {
     private static JFrame myFrame;
-    private JTextField bookNameField, libraryIDField;
+    private JTextField nameField, libraryField;
     private JTextArea resultArea;
 
     public CheckAvailabilityPage() {
-        myFrame = new JFrame("Check Book Availability");
+        myFrame = new JFrame("Search for a Book");
         myFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        myFrame.setSize(400, 200);
+        myFrame.setSize(600, 400);
 
-        JPanel myPanel = new JPanel(new GridLayout(2, 2));
+        JPanel myPanel = new JPanel(new GridLayout(6, 2));
         myPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 
         myPanel.add(new JLabel("Book Name: "));
-        bookNameField = new JTextField();
-        myPanel.add(bookNameField);
+        nameField = new JTextField();
+        myPanel.add(nameField);
 
-        myPanel.add(new JLabel("Library ID: "));
-        libraryIDField = new JTextField();
-        myPanel.add(libraryIDField);
+        myPanel.add(new JLabel("LibraryID: "));
+        libraryField = new JTextField();
+        myPanel.add(libraryField);
 
-        JButton searchButton = new JButton("Search");
+        JButton searchButton = new JButton("Check Availability");
         myPanel.add(searchButton);
         searchButton.addActionListener(e -> {
-            String bookName = bookNameField.getText();
-            int libraryID = Integer.parseInt(libraryIDField.getText());
-
-            ResultSet result = getBookAvailability(bookName, libraryID);
+            String bookName = nameField.getText();
+            String libraryID = libraryField.getText();
+            
+            ResultSet result = null;
+            if (!bookName.isEmpty() && !libraryID.isEmpty()) {
+                result = getAvailabilityByBookNameAndLibraryID(bookName, libraryID);
+            }
 
             // Call a function to display the result in resultArea
             displayResult(result);
+        });
+        // Back button to get back to the main page.
+        JButton backButton = new JButton("Back");
+        backButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                myFrame.dispose();
+                MainPage.myFrame.setVisible(true);
+            }
+        });
+
+        // Make sure that if the user clicks the 'X', the main page is restored
+        myFrame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                MainPage.myFrame.setVisible(true);
+            }
         });
 
         resultArea = new JTextArea();
@@ -50,30 +74,15 @@ public class CheckAvailabilityPage {
 
         myFrame.add(myPanel, BorderLayout.NORTH);
         myFrame.add(scrollPane, BorderLayout.CENTER);
+        myFrame.add(backButton, BorderLayout.SOUTH);
 
         myFrame.setLocationRelativeTo(null);
         myFrame.setVisible(true);
     }
 
-    public ResultSet getBookAvailability(String bookName, int libraryID) {
-        String query = "SELECT BOOK.BookName as 'Book Name', LIBRARY_AVAILABILITY.Available as 'Availability' " +
-                "FROM BOOK " +
-                "INNER JOIN LIBRARY_AVAILABILITY ON LIBRARY_AVAILABILITY.BookID = BOOK.BookID " +
-                "WHERE BOOK.BookName = ? AND LIBRARY_AVAILABILITY.LibraryID = ?";
-        try {
-            PreparedStatement stmt = getConnection().prepareStatement(query);
-            stmt.setString(1, bookName);
-            stmt.setInt(2, libraryID);
-            return stmt.executeQuery();
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-            return null;
-        }
-    }
-
     public Connection getConnection() {
         try {
-            String url = "jdbc:sqlserver://localhost:1433;databaseName=LibraryDB;integratedSecurity=true";
+            String url = "jdbc:sqlserver://localhost:1433;databaseName=LibraryDB;integratedSecurity=true;trustServerCertificate=true;";
             Connection conn = DriverManager.getConnection(url);
             return conn;
         } catch (SQLException ex) {
@@ -82,21 +91,39 @@ public class CheckAvailabilityPage {
         }
     }
 
-    public void displayResult(ResultSet result) {
+    public ResultSet getAvailabilityByBookNameAndLibraryID(String bookName, String libraryID) {
+        String query = "SELECT BOOK.BookID, BOOK.BookName as 'Book Name', BOOK.PageCount as 'Page Count', " +
+                       "BOOK.AuthorName as 'Author Name', PUBLISHER.PublisherName as 'Publisher Name' " +
+                       "FROM BOOK " +
+                       "INNER JOIN AVAILABILITY ON BOOK.BookID = AVAILABILITY.BookID " +
+                       "INNER JOIN LIBRARY ON AVAILABILITY.LibraryID = LIBRARY.LibraryID " +
+                       "INNER JOIN PUBLISHER ON BOOK.PublisherID = PUBLISHER.PublisherID " +
+                       "WHERE BOOK.BookName = ? AND AVAILABILITY.LibraryID = ?";
+    
         try {
-            if (result != null && result.next()) {
-                String bookName = result.getString("Book Name");
-                boolean availability = result.getBoolean("Availability");
+            PreparedStatement stmt = getConnection().prepareStatement(query);
+            stmt.setString(1, bookName);
+            stmt.setString(2, libraryID);
+            return stmt.executeQuery();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            return null;
+        }
+    }
+    
 
-                String availabilityText = availability ? "Available" : "Not Available";
-                String resultText = "Book: " + bookName + "\nAvailability: " + availabilityText;
-
-                resultArea.setText(resultText);
-            } else {
-                resultArea.setText("Book not found or library not available");
+    public void displayResult(ResultSet result) {
+        StringBuilder resultText = new StringBuilder("Results:\n");
+        try {
+            while (result != null && result.next()) {
+                // You may need to adjust this based on the result structure of your SQL queries
+                String line = result.getString("Book Name") + " - " + result.getString("Author Name");
+                resultText.append(line).append("\n");
             }
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
+        resultArea.setText(resultText.toString());
     }
+    
 }
