@@ -112,21 +112,27 @@ public class CheckAvailabilityPage {
     public void displayResult(ResultSet result) {
         StringBuilder resultText = new StringBuilder("Results:\n");
         try {
-            ResultSetMetaData metaData = result.getMetaData();
-            int columnCount = metaData.getColumnCount();
+            boolean bookAvailable = false;
     
             while (result != null && result.next()) {
-                for (int i = 1; i <= columnCount; i++) {
-                    String columnName = metaData.getColumnLabel(i);
-                    String value = result.getString(i);
-                    resultText.append(columnName).append(": ").append(value).append("\n");
-                }
-                resultText.append("\n");
+                String bookName = result.getString("BookName");
+                String libraryID = result.getString("LibraryID");
+                int availableQuantity = result.getInt("Quantity");
+    
+                String line = bookName + " is available at Library ID " + libraryID + ". There are " + availableQuantity + " left in stock.";
+                resultText.append(line).append("\n");
+    
+                bookAvailable = true;
+            }
+    
+            if (!bookAvailable) {
+                resultText.append("Book not available at the specified library.");
             }
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
+        
         resultArea.setFont(new Font("Courier New", Font.PLAIN, 12));
         resultArea.setText(resultText.toString());
-    }    
+    }      
 }
