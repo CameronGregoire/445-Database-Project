@@ -112,18 +112,20 @@ public class CheckAvailabilityPage {
     public void displayResult(ResultSet result) {
         StringBuilder resultText = new StringBuilder("Results:\n");
         try {
+            ResultSetMetaData metaData = result.getMetaData();
+            int columnCount = metaData.getColumnCount();
+    
             while (result != null && result.next()) {
-                String bookName = result.getString("BookName");
-                String libraryID = result.getString("LibraryID");
-                int availableQuantity = result.getInt("Quantity");
-                
-                String line = bookName + " is available at Library ID " + libraryID + ". There are " + availableQuantity + " left in stock.";
-                resultText.append(line).append("\n");
+                for (int i = 1; i <= columnCount; i++) {
+                    String columnName = metaData.getColumnLabel(i);
+                    String value = result.getString(i);
+                    resultText.append(columnName).append(": ").append(value).append("\n");
+                }
+                resultText.append("\n");
             }
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
         resultArea.setText(resultText.toString());
-    }
-    
+    }    
 }
