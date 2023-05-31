@@ -111,13 +111,15 @@ public class CheckAvailabilityPage {
         }
     }
     
-
     public void displayResult(ResultSet result) {
         StringBuilder resultText = new StringBuilder("Results:\n");
         try {
             while (result != null && result.next()) {
-                // You may need to adjust this based on the result structure of your SQL queries
-                String line = result.getString("Book Name") + " - " + result.getString("Author Name");
+                String bookName = result.getString("Book Name");
+                String libraryID = result.getString("Library ID");
+                int availableQuantity = result.getInt("Quantity");
+                
+                String line = bookName + " is available at Library ID " + libraryID + ". There are " + availableQuantity + " left in stock.";
                 resultText.append(line).append("\n");
             }
         } catch (SQLException ex) {
@@ -125,5 +127,4 @@ public class CheckAvailabilityPage {
         }
         resultArea.setText(resultText.toString());
     }
-    
 }
