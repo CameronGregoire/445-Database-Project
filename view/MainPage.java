@@ -88,6 +88,13 @@ public class MainPage {
         JButton button9 = new JButton("Find Next Billing Cycle...");
         JButton button10 = new JButton("Find all Current Members in a Location...");
         JButton button11 = new JButton("Get Customer Details...");
+        button11.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                myFrame.setVisible(false);
+                new CustomerDetailsPage();
+            }
+        });
 
         myButtonPanel.add(button1);
         myButtonPanel.add(button2);
