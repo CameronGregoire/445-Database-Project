@@ -144,6 +144,13 @@ public class MainPage {
         });
 
         JButton button11 = new JButton("Get Customer Details...");
+        button11.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                myFrame.setVisible(false);
+                new CustomerDetailsPage();
+            }
+        });
 
         myButtonPanel.add(button1);
         myButtonPanel.add(button2);
