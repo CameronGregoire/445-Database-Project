@@ -48,7 +48,7 @@ public class SearchBookPage {
         publisherField = new JTextField();
         myPanel.add(publisherField);
 
-        JButton searchButton = new JButton("Search");
+        JButton searchButton = new JButton("Search (via First Valid Field)");
         myPanel.add(searchButton);
         searchButton.addActionListener(e -> {
             String bookName = nameField.getText();
