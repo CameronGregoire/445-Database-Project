@@ -108,25 +108,24 @@ public class CheckShipmentsPage {
         StringBuilder resultText = new StringBuilder("Results:\n");
         try {
             while (result != null && result.next()) {
+                int shipmentID = result.getInt("ShipmentID");
                 String shipDate = result.getString("ShipDate");
-                String libraryID = result.getString("LibraryID");
-                String cityID = result.getString("CityID");
-                String stateID = result.getString("StateID");
-                String zipCode = result.getString("ZipCode");
-
-                String line = "Shipment Date: " + shipDate + "\n";
+                String description = result.getString("Description");
+                int libraryID = result.getInt("LibraryID");
+    
+                String line = "Shipment ID: " + shipmentID + "\n";
+                line += "Shipment Date: " + shipDate + "\n";
+                line += "Description: " + description + "\n";
                 line += "Library ID: " + libraryID + "\n";
-                line += "City ID: " + cityID + "\n";
-                line += "State ID: " + stateID + "\n";
-                line += "Zip Code: " + zipCode + "\n";
-
+    
                 resultText.append(line).append("\n");
             }
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
-
+    
         resultArea.setFont(new Font("Courier New", Font.PLAIN, 12));
         resultArea.setText(resultText.toString());
     }
+    
 }
