@@ -9,6 +9,10 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.sql.*;
 
+/**
+ * This class is responsible for handling the following:
+ * Get a list of books by given book name, author name, book genre, rating, or publisher.
+ */
 public class SearchBookPage {
     private static JFrame myFrame;
     private JTextField nameField, authorField, genreField, ratingField, publisherField;
@@ -26,11 +30,11 @@ public class SearchBookPage {
         nameField = new JTextField();
         myPanel.add(nameField);
 
-        myPanel.add(new JLabel("Author Name: "));
+        myPanel.add(new JLabel("Author Name Contains: "));
         authorField = new JTextField();
         myPanel.add(authorField);
 
-        myPanel.add(new JLabel("Genre: "));
+        myPanel.add(new JLabel("Genre Contains: "));
         genreField = new JTextField();
         myPanel.add(genreField);
 
@@ -38,7 +42,7 @@ public class SearchBookPage {
         ratingField = new JTextField();
         myPanel.add(ratingField);
 
-        myPanel.add(new JLabel("Publisher: "));
+        myPanel.add(new JLabel("Publisher Contains: "));
         publisherField = new JTextField();
         myPanel.add(publisherField);
 

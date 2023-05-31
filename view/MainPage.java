@@ -13,7 +13,7 @@ import java.awt.event.ActionListener;
  * on the attached library database.
  * 
  * The user should be able to choose to do any of the following from this screen:
- * 1) Get a list of books by given book name, author name, book genre, rating (float value), or publisher.
+ * 1) Get a list of books by given book name, author name, book genre, rating, or publisher.
  * 2) Check the availability of a book given a specified LibraryID (int value).
  * 3) Check if (when and where/date and LibraryID) there are any up coming shipments of a specified book name.
  * 4) Purchase a membership with this library franchise.
