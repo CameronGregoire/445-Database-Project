@@ -102,23 +102,26 @@ public class CheckShipmentsPage {
             return null;
         }
     }
-    
 
     public void displayResult(ResultSet result) {
         StringBuilder resultText = new StringBuilder("Results:\n");
         try {
-            while (result != null && result.next()) {
-                int shipmentID = result.getInt("ShipmentID");
-                String shipDate = result.getString("ShipDate");
-                String description = result.getString("Description");
-                int libraryID = result.getInt("LibraryID");
+            if (!result.isBeforeFirst()) {
+                resultText.append("No upcoming shipments for the specified book were found.");
+            } else {
+                while (result.next()) {
+                    int shipmentID = result.getInt("ShipmentID");
+                    String shipDate = result.getString("ShipDate");
+                    String description = result.getString("Description");
+                    int libraryID = result.getInt("LibraryID");
     
-                String line = "Shipment ID: " + shipmentID + "\n";
-                line += "Shipment Date: " + shipDate + "\n";
-                line += "Description: " + description + "\n";
-                line += "Library ID: " + libraryID + "\n";
+                    String line = "Shipment ID: " + shipmentID + "\n";
+                    line += "Shipment Date: " + shipDate + "\n";
+                    line += "Description: " + description + "\n";
+                    line += "Library ID: " + libraryID + "\n";
     
-                resultText.append(line).append("\n");
+                    resultText.append(line).append("\n");
+                }
             }
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -127,5 +130,4 @@ public class CheckShipmentsPage {
         resultArea.setFont(new Font("Courier New", Font.PLAIN, 12));
         resultArea.setText(resultText.toString());
     }
-    
 }
