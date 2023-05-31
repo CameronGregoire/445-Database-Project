@@ -114,8 +114,8 @@ public class CheckAvailabilityPage {
         StringBuilder resultText = new StringBuilder("Results:\n");
         try {
             while (result != null && result.next()) {
-                String bookName = result.getString("Book Name");
-                String libraryID = result.getString("Library ID");
+                String bookName = result.getString("BookName");
+                String libraryID = result.getString("LibraryID");
                 int availableQuantity = result.getInt("Quantity");
                 
                 String line = bookName + " is available at Library ID " + libraryID + ". There are " + availableQuantity + " left in stock.";
@@ -126,4 +126,5 @@ public class CheckAvailabilityPage {
         }
         resultArea.setText(resultText.toString());
     }
+    
 }
